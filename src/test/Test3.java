@@ -12,18 +12,14 @@ public class Test3 extends Test2 {
     private Map<Station, Double> shortestDistanceCache = new HashMap<>(); // 缓存每个站点到目的站点的最短距离
     private Set<Station> visited = new HashSet<>(); // 记录已访问的站点
 
-    public void test3() throws IOException {
-        this.scannerAndDFS();
+    public void test3(String start,String destination) throws IOException {
+        this.scannerAndDFS(start,destination);
         this.printAllPaths();
     }
     // 输入并执行DFS
-    public void scannerAndDFS() throws IOException {
+    public void scannerAndDFS(String start,String destination) throws IOException {
         this.readtxt2();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("请输入起始站站点名：");
-        String start = scanner.nextLine();
-        System.out.println("请输入终点站站点名：");
-        String destination = scanner.nextLine();
+        
 
         Station startStation = findStationByName(getStationAndNext().keySet(), start);
         Station destinationStation = findStationByName(getStationAndNext().keySet(), destination);
