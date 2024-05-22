@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class Test4 extends Test3 {
-    public void test4() throws IOException{
-        this.scannerAndDFS();
+    public void test4(String start,String destination) throws IOException{
+        this.scannerAndDFS(start,destination);
         List<Station> shortestPath = getShortestPath();
         if (shortestPath != null) {
             System.out.print("最短路径为：<");

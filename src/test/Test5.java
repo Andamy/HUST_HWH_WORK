@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 public class Test5 extends Test4{
-    public void test5() throws IOException {
+    public void test5(String start,String destination) throws IOException {
         this.readtxt1();
-        this.scannerAndDFS();
+        this.scannerAndDFS(start,destination);
         List<Station> selectedPath = getShortestPath();
         System.out.println(selectedPath);
         if (selectedPath == null || selectedPath.isEmpty()) {

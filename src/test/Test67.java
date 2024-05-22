@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Test67 extends Test5{
-    public void test6() throws IOException {
-        this.scannerAndDFS();
+    public void test6(String start,String destination,int sc) throws IOException {
+        this.scannerAndDFS(start,destination);
         this.printAllPaths();
-        Scanner sc = new Scanner(System.in);
-        System.out.println("请输入线路数字（例如选择线路1则输入”1“）：");
-        int num = sc.nextInt();
+        
+        
+        int num = sc;
         if (num > getAllPaths().size()){
             System.out.println("输入错误！");
         }

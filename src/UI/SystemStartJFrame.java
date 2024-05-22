@@ -4,11 +4,20 @@ import subwaysystem.Station;
 import test.Test1;
 import test.Test2;
 import test.Test3;
+import test.Test4;
+import test.Test5;
+import test.Test67;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class SystemStartJFrame extends JFrame {
@@ -20,10 +29,12 @@ public class SystemStartJFrame extends JFrame {
     private Test1 test1 = new Test1();
     private Test2 test2 = new Test2();
     private Test3 test3 = new Test3();
-
+    private Test4 test4 = new Test4();
+    private Test5 test5 = new Test5();
+    private Test67 test6 = new Test67();
     public SystemStartJFrame() {
         setTitle("武汉地铁系统");
-        setSize(600, 700);
+        setSize(600, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         cardLayout = new CardLayout();
@@ -128,18 +139,15 @@ public class SystemStartJFrame extends JFrame {
         topRightPanel.setLayout(new BoxLayout(topRightPanel, BoxLayout.Y_AXIS));
         JButton allRoutesButton = new JButton("查询所有路径");
         JButton shortestRouteButton = new JButton("选择最短路径");
-        JLabel routeChoiceLabel = new JLabel("选择线路");
+        JLabel routeChoiceLabel = new JLabel("选择线路（输入路线数字）");
         routeChoiceField = new JTextField();
         JButton confirmButton = new JButton("确定");
-        JLabel paymentLabel = new JLabel("选择付款方式");
-        paymentComboBox = new JComboBox<>(new String[]{"普通单程票", "武汉通", "日票"});
-        JButton payButton = new JButton("支付");
+
         JButton backButton = new JButton("返回");
 
         allRoutesButton.addActionListener(e -> queryAllRoutes());
         shortestRouteButton.addActionListener(e -> queryShortestRoute());
         confirmButton.addActionListener(e -> confirmRouteChoice());
-        payButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "支付完成"));
         backButton.addActionListener(e -> cardLayout.show(mainPanel, "Main"));
 
         topRightPanel.add(allRoutesButton);
@@ -147,9 +155,8 @@ public class SystemStartJFrame extends JFrame {
         topRightPanel.add(routeChoiceLabel);
         topRightPanel.add(routeChoiceField);
         topRightPanel.add(confirmButton);
-        topRightPanel.add(paymentLabel);
-        topRightPanel.add(paymentComboBox);
-        topRightPanel.add(payButton);
+        
+        
         topRightPanel.add(backButton);
 
         inputPanel.add(topLeftPanel);
@@ -237,20 +244,28 @@ public class SystemStartJFrame extends JFrame {
     private void queryAllRoutes() {  
         String startStation = startStationField.getText();  
         String endStation = endStationField.getText();  
-      
+        try {
+        	test1.readtxt1();
+            test2.readtxt2();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
         // 验证起始和目的站点  
         Station sStation = test2.findStationByName(test2.getStationAndNext().keySet(), startStation);  
         Station eStation = test2.findStationByName(test2.getStationAndNext().keySet(), endStation);  
-        if (startStation == null || sStation.getName().isEmpty()) {  
+        
+      
+        if (sStation == null || sStation.getName().isEmpty()) {  
         	resultAreaRoutes.setText("起始站点未找到！");  
             return;  
         }  
-        if (endStation == null || eStation.getName().isEmpty()) {  
+        if (eStation == null || eStation.getName().isEmpty()) {  
         	resultAreaRoutes.setText("目的站点未找到！");  
             return;  
         }  
       
         try {  
+        	
             // 调用scannerAndDFS进行深度优先搜索  
             test3.scannerAndDFS(startStation, endStation);  
       
@@ -284,17 +299,157 @@ public class SystemStartJFrame extends JFrame {
     }
 
     private void queryShortestRoute() {
-        // TODO: Implement the logic to query the shortest route
-        String result = "查询结果：最短路径信息\n"; // Placeholder for actual result
-        resultAreaRoutes.append(result);
+    	try {
+        	test1.readtxt1();
+            test2.readtxt2();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    	 String startStation = startStationField.getText();  
+         String endStation = endStationField.getText(); 
+         Station sStation = test2.findStationByName(test2.getStationAndNext().keySet(), startStation);  
+         Station eStation = test2.findStationByName(test2.getStationAndNext().keySet(), endStation);
+         if (sStation == null || sStation.getName().isEmpty()) {  
+         	resultAreaRoutes.setText("起始站点未找到！");  
+             return;  
+         }  
+         if (eStation == null || eStation.getName().isEmpty()) {  
+         	resultAreaRoutes.setText("目的站点未找到！");  
+             return;  
+         }
+         
+
+         try {  
+        	 String result = "查询结果：最短路径信息\n"; // Placeholder for actual result
+             resultAreaRoutes.append(result);
+             test4.scannerAndDFS(startStation, endStation);
+            
+             List<Station> ShortestPath = test4.getShortestPath();
+             StringBuilder sb = new StringBuilder();  
+             sb.append("最短线路").append("<"); 
+             for (Station station : ShortestPath) {  
+                  
+                  
+                sb.append(station.getName()).append(" ");  
+             } 
+                 sb.append(">").append("\n"); 
+               
+                 
+                
+                 resultAreaRoutes.append(sb.toString());  
+         } catch (IOException e) {  
+             // 在生产环境中，你可能希望使用日志记录而不是直接打印堆栈跟踪  
+             e.printStackTrace();  
+             resultAreaRoutes.setText("发生IO错误：" + e.getMessage());  
+         }
+         try {
+        	 test4.scannerAndDFS(startStation, endStation);
+             
+             List<Station> ShortestPath = test4.getShortestPath();
+             StringBuilder sb = new StringBuilder();  
+        	 sb.append("乘车路线: ").append("\n");
+         	
+             List<String> nLine = new ArrayList<>();
+             Set<String> sameLine = new HashSet<>(test1.getTransforStationlist().get(ShortestPath.get(0).getName()));
+             int i = 0;
+                  for (; i < ShortestPath.size() - 1; i++){
+                	  
+                	  String current = ShortestPath.get(i).getName();
+                      String next = ShortestPath.get(i + 1).getName();
+                      Set<String> currentLines = new HashSet<>(test1.getTransforStationlist().get(current));
+                      Set<String> nextLines = new HashSet<>(test1.getTransforStationlist().get(next));
+
+                      currentLines.retainAll(nextLines);
+                      sameLine.retainAll(currentLines);
+                      if (sameLine.isEmpty()){
+                          sb.append("乘").append(nLine.get(0)).append("从").append(ShortestPath.get(0)).append("到").append(current).append("，");
+                          sameLine.clear();
+                          sameLine.addAll(test1.getTransforStationlist().get(ShortestPath.get(i).getName()));
+                          break;
+                      }
+                      nLine.clear();
+                      nLine.addAll(sameLine);
+                  }
+                  
+                  List<String> nowLine = new ArrayList<>(new LinkedHashSet<>(nLine));
+                  String start = ShortestPath.get(i).getName();
+                  for (; i < ShortestPath.size() - 1; i++){
+                      String current = ShortestPath.get(i).getName();
+                      String next = ShortestPath.get(i + 1).getName();
+                      Set<String> currentLines = new HashSet<>(test1.getTransforStationlist().get(current));
+                      Set<String> nextLines = new HashSet<>(test1.getTransforStationlist().get(next));
+
+                      currentLines.retainAll(nextLines);
+                      sameLine.retainAll(currentLines);
+                      if (sameLine.isEmpty() && i < ShortestPath.size() - 2){
+                    	  sb.append("换乘").append(nowLine.get(0)).append("从").append(start).append("到").append(current).append("，");
+                          sameLine.clear();
+                          sameLine.addAll(test1.getTransforStationlist().get(ShortestPath.get(i).getName()));
+                          test5.printTransfer(ShortestPath, i, nowLine, sameLine);
+                          break;
+                      } else if(i == ShortestPath.size() - 2){
+                    	  sb.append("换乘").append(nowLine.get(0)).append("从").append(start).append("到").append(current).append("。");
+                    	  
+                          break;
+                      }
+                      nowLine.clear();
+                      nowLine.addAll(sameLine);
+                  }
+                  resultAreaRoutes.append(sb.toString());
+                  
+                  }catch (IOException e) {  
+             // 在生产环境中，你可能希望使用日志记录而不是直接打印堆栈跟踪  
+             e.printStackTrace();  
+             resultAreaRoutes.setText("发生IO错误：" + e.getMessage());  
+         }
+         
+        
+        
     }
 
     private void confirmRouteChoice() {
         String routeChoice = routeChoiceField.getText();
-        // TODO: Implement the logic to confirm route choice based on routeChoice
+        String startStation = startStationField.getText();  
+        String endStation = endStationField.getText();
+        try {
+			test3.scannerAndDFS(startStation, endStation);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         String result = "确认结果：选择线路信息\n"; // Placeholder for actual result
         resultAreaRoutes.append(result);
+        
+        // 假设scannerAndDFS更新了test3的状态，我们可以从中获取所有路径  
+        List<List<Station>> allPaths = test3.getAllPaths();
+        int num = 0;
+        try{
+        
+        num =  Integer.parseInt(routeChoice);
+        if (num > allPaths.size()){
+            System.out.println("线路选择错误");
+        }
+        if (num <= 0 || num%1 != 0){
+            resultAreaStations.setText("线路选择错误");
+            return;
+        }
+        
+        
+        
+    } catch (NumberFormatException e) {
+        resultAreaRoutes.setText("距离格式错误！");
+        e.printStackTrace();
     }
+       
+        List<Station> selectedPath = allPaths.get(num - 1);
+        double distance = test3.getAllPathAndDistances().get(selectedPath);
+        Test67 test67 = new Test67();
+        resultAreaRoutes.append("普通单程票票价：" + (test67.price(distance) - test67.price(distance)%1) + "元\n");
+        resultAreaRoutes.append("武汉通票价：" + (test67.price(distance) - test67.price(distance)%1) * 0.9 + "元\n");
+        resultAreaRoutes.append("日票票价：" + 0 + "元\n");
+       
+    } 
+    
 
     private void showAuthorInfo() {
         JOptionPane.showMessageDialog(this, "作者信息：\n姓名：黄伟豪\n学号：U202211629\n班级：工程管理2201班");
